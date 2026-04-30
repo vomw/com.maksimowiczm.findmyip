@@ -1,0 +1,92 @@
+name: Build Android APKs
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build all APK variants
+        run: ./gradlew :opensource:composeApp:assemble
+
+      - name: Rename and Prepare APKs
+        run: |
+          # Extract metadata from build.gradle.kts
+          PACKAGE_ID=$(grep "applicationId =" opensource/composeApp/build.gradle.kts | cut -d '"' -f 2)
+          VERSION_NAME=$(grep "versionName =" opensource/composeApp/build.gradle.kts | cut -d '"' -f 2)
+          VERSION_CODE=$(grep "versionCode =" opensource/composeApp/build.gradle.kts | grep -o '[0-9]\+' | head -n 1)
+          
+          mkdir -p output_apks
+          
+          # Find all APKs and rename them
+          find opensource/composeApp/build/outputs/apk -name "*.apk" | while read -r apk; do
+            BUILD_TYPE=$(basename $(dirname "$apk"))
+            FILE_NAME=$(basename "$apk")
+            
+            # For release build type, we will handle the signing in the next step
+            if [[ "$BUILD_TYPE" == "release" && "$FILE_NAME" == *"-unsigned"* ]]; then
+              continue
+            fi
+            
+            NEW_NAME="${PACKAGE_ID}-v${VERSION_NAME}-${VERSION_CODE}-${BUILD_TYPE}.apk"
+            cp "$apk" "output_apks/$NEW_NAME"
+          done
+
+      - name: Sign Release APK
+        if: github.event_name != 'pull_request'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE_64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "Signing secrets not set, skipping signing."
+            exit 0
+          fi
+
+          # Extract metadata again for naming
+          PACKAGE_ID=$(grep "applicationId =" opensource/composeApp/build.gradle.kts | cut -d '"' -f 2)
+          VERSION_NAME=$(grep "versionName =" opensource/composeApp/build.gradle.kts | cut -d '"' -f 2)
+          VERSION_CODE=$(grep "versionCode =" opensource/composeApp/build.gradle.kts | grep -o '[0-9]\+' | head -n 1)
+          
+          RELEASE_APK="opensource/composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk"
+          SIGNED_APK_NAME="${PACKAGE_ID}-v${VERSION_NAME}-${VERSION_CODE}-release-signed.apk"
+
+          # Decode keystore
+          echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+
+          # Sign APK
+          apksigner sign --ks release.keystore \
+            --ks-key-alias "$KEY_ALIAS" \
+            --ks-pass pass:"$KEYSTORE_PASSWORD" \
+            --key-pass pass:"$KEY_PASSWORD" \
+            --out "output_apks/$SIGNED_APK_NAME" \
+            "$RELEASE_APK"
+          
+          rm release.keystore
+          echo "Signed APK created: $SIGNED_APK_NAME"
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apks
+          path: output_apks/*.apk
