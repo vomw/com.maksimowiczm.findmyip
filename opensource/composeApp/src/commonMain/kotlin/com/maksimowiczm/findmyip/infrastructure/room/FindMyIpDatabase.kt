@@ -65,9 +65,6 @@ internal abstract class FindMyIpDatabase : RoomDatabase(), TransactionProvider {
     }
 }
 
-@Suppress("NO_ACTUAL_FOR_EXPECT")
-internal expect object FindMyIpDatabaseConstructor : RoomDatabaseConstructor<FindMyIpDatabase>
-
 /**
  * This is 3.0.0 -> 4.0.0 migration. Create new Address table with new schema and copy data from old
  * AddressEntity table.
