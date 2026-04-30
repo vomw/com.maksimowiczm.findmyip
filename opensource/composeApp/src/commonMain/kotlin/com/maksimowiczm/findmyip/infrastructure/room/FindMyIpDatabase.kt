@@ -1,8 +1,10 @@
 package com.maksimowiczm.findmyip.infrastructure.room
 
 import androidx.room.AutoMigration
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import androidx.room.exclusiveTransaction
 import androidx.room.immediateTransaction
@@ -30,6 +32,7 @@ import com.maksimowiczm.findmyip.shared.core.infrastructure.room.RoomTransaction
     exportSchema = true,
 )
 @TypeConverters(AddressVersionTypeConverter::class, NetworkTypeTypeConverter::class)
+@ConstructedBy(FindMyIpDatabaseConstructor::class)
 internal abstract class FindMyIpDatabase : RoomDatabase(), TransactionProvider {
 
     abstract val addressHistoryDao: AddressHistoryDao
@@ -61,6 +64,9 @@ internal abstract class FindMyIpDatabase : RoomDatabase(), TransactionProvider {
         }
     }
 }
+
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+internal expect object FindMyIpDatabaseConstructor : RoomDatabaseConstructor<FindMyIpDatabase>
 
 /**
  * This is 3.0.0 -> 4.0.0 migration. Create new Address table with new schema and copy data from old
