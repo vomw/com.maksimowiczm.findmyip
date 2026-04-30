@@ -19,3 +19,4 @@ captures
 keystore*
 *.apk*
 screenshots*
+job-logs.txt
