@@ -69,20 +69,30 @@ jobs:
           VERSION_CODE=$(grep "versionCode =" opensource/composeApp/build.gradle.kts | grep -o '[0-9]\+' | head -n 1)
           
           RELEASE_APK="opensource/composeApp/build/outputs/apk/release/composeApp-release-unsigned.apk"
+          ALIGNED_APK="output_apks/aligned.apk"
           SIGNED_APK_NAME="${PACKAGE_ID}-v${VERSION_NAME}-${VERSION_CODE}-release-signed.apk"
 
           # Decode keystore
           echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
 
+          # Find build tools (apksigner and zipalign)
+          BUILD_TOOLS_DIR=$(ls -d ${ANDROID_HOME}/build-tools/* | tail -n 1)
+          ZIPALIGN="${BUILD_TOOLS_DIR}/zipalign"
+          APKSIGNER="${BUILD_TOOLS_DIR}/apksigner"
+
+          # Zipalign
+          "$ZIPALIGN" -v -f 4 "$RELEASE_APK" "$ALIGNED_APK"
+
           # Sign APK
-          apksigner sign --ks release.keystore \
+          "$APKSIGNER" sign --ks release.keystore \
             --ks-key-alias "$KEY_ALIAS" \
             --ks-pass pass:"$KEYSTORE_PASSWORD" \
             --key-pass pass:"$KEY_PASSWORD" \
             --out "output_apks/$SIGNED_APK_NAME" \
-            "$RELEASE_APK"
+            "$ALIGNED_APK"
           
           rm release.keystore
+          rm "$ALIGNED_APK"
           echo "Signed APK created: $SIGNED_APK_NAME"
 
       - name: Upload APKs
