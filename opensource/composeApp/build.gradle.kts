@@ -133,7 +133,6 @@ compose.resources {
 
 dependencies {
     listOf(
-            "kspCommonMainMetadata",
             "kspAndroid",
             "kspIosX64",
             "kspIosArm64",
