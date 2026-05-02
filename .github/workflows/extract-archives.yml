@@ -1,0 +1,60 @@
+name: Extract Archives and Commit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+      - name: Extract .tar.gz and .gz files
+        run: |
+          set -e
+
+          changed=false
+
+          # Handle .tar.gz files
+          find . -type f -name "*.tar.gz" | while read file; do
+            echo "Extracting $file"
+            if tar -xzf "$file" -C "$(dirname "$file")"; then
+              rm "$file"
+              changed=true
+            else
+              echo "Failed to extract $file"
+              exit 1
+            fi
+          done
+
+          # Handle .gz files (non-tar)
+          find . -type f -name "*.gz" ! -name "*.tar.gz" | while read file; do
+            echo "Extracting $file"
+            if gunzip "$file"; then
+              changed=true
+            else
+              echo "Failed to extract $file"
+              exit 1
+            fi
+          done
+
+          # Save flag for next step
+          echo "changed=$changed" >> $GITHUB_ENV
+
+      - name: Commit and push changes
+        if: env.changed == 'true'
+        run: |
+          git add .
+          git commit -m "Extract archives and remove compressed files"
+          git push
