@@ -30,7 +30,7 @@ jobs:
           echo "Using temp dir: $TMP_DIR"
 
           # --- Extract .tar.gz ---
-          find . -name "*.tar.gz" -print0 | while IFS= read -r -d '' path; do
+          while IFS= read -r -d '' path; do
             if [ -f "$path" ]; then
               echo "Processing $path"
 
@@ -51,10 +51,10 @@ jobs:
             else
               echo "Skipping (not a file): $path"
             fi
-          done
+          done < <(find . -name "*.tar.gz" -print0)
 
-          # --- Extract .gz (non-tar) ---
-          find . -name "*.gz" ! -name "*.tar.gz" -print0 | while IFS= read -r -d '' path; do
+          # --- Extract .gz ---
+          while IFS= read -r -d '' path; do
             if [ -f "$path" ]; then
               echo "Processing $path"
 
@@ -75,17 +75,29 @@ jobs:
                 echo "Skipping (not real gzip): $path"
               fi
             fi
-          done
+          done < <(find . -name "*.gz" ! -name "*.tar.gz" -print0)
 
-          # --- Move extracted files back ---
-          echo "Restoring extracted files..."
+          # Restore files
           rsync -a "$TMP_DIR"/ ./
 
           echo "changed=$changed" >> $GITHUB_ENV
 
+
+
+      - name: Debug changed flag
+        run: echo "changed=$changed"
+
+
+
+
+
       - name: Commit and push changes
-        if: env.changed == 'true'
         run: |
-          git add .
-          git commit -m "Extract archives via temp dir and remove compressed files"
-          git push
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add .
+            git commit -m "Extract archives via temp dir and remove compressed files"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+          
