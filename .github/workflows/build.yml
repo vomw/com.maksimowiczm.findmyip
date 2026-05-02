@@ -1,0 +1,114 @@
+name: Build Android APKs
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Build all variants
+        run: |
+          cd "com.maksimowiczm.findmyip_15_src.tar.gz"
+          chmod +x gradlew
+          ./gradlew assemble
+        env:
+          # Optional: increase memory if needed
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
+
+      - name: Sign Release APKs
+        if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
+        uses: r0adkll/sign-android-release@v1
+        id: sign_app
+        with:
+          releaseDirectory: com.maksimowiczm.findmyip_15_src.tar.gz/app/build/outputs/apk
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
+
+      - name: Prepare and Rename Artifacts
+        run: |
+          mkdir -p artifacts
+          PROJECT_ROOT="com.maksimowiczm.findmyip_15_src.tar.gz"
+          
+          # Extract version info from build.gradle.kts
+          VERSION_NAME=$(grep "versionName =" $PROJECT_ROOT/app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
+          VERSION_CODE=$(grep "versionCode =" $PROJECT_ROOT/app/build.gradle.kts | sed 's/.*= //')
+          PACKAGE_ID="com.maksimowiczm.findmyip"
+          
+          echo "Base Version Name: $VERSION_NAME"
+          echo "Version Code: $VERSION_CODE"
+          
+          # Find all APKs and rename them
+          # Search in app/build/outputs/apk/
+          find "$PROJECT_ROOT/app/build/outputs/apk" -name "*.apk" | while read apk; do
+            filename=$(basename "$apk")
+            dir=$(dirname "$apk")
+            
+            # Determine flavor and build type from path
+            # Path structure: .../apk/<flavor>/<buildType>/...
+            # e.g. .../apk/openSourceIpify/release/app-openSource-ipify-release-unsigned.apk
+            
+            # Extract parts of the path
+            build_type=$(basename "$dir")
+            flavor_dir=$(dirname "$dir")
+            flavor=$(basename "$flavor_dir")
+            
+            # Only process if we are in a variant directory
+            if [[ "$flavor" == "openSourceIpify" || "$flavor" == "openSourceFake" ]]; then
+              
+              # Set flavor-specific values
+              current_pkg="$PACKAGE_ID"
+              current_ver="$VERSION_NAME"
+              
+              if [[ "$flavor" == "openSourceFake" ]]; then
+                current_pkg="${PACKAGE_ID}.fake"
+                current_ver="${VERSION_NAME}-fake"
+              fi
+              
+              # Construct variant name for the file
+              # Capitalize build type for the filename
+              variant_label="${flavor}${build_type^}"
+              
+              # Check if it's the signed version (if signing was performed)
+              if [[ "$filename" == *"-signed.apk" ]]; then
+                new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}.apk"
+                cp "$apk" "artifacts/$new_name"
+                echo "Renamed signed $filename to $new_name"
+              elif [[ "$filename" == *"-unsigned.apk" || "$filename" == *"debug.apk" ]]; then
+                # Only copy unsigned if we don't have a signed one, or if it's debug
+                # To avoid duplicates, we'll check if a signed one already exists later or just copy all and let signed overwrite
+                new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}.apk"
+                
+                # If it's a release build and we expect a signed one, don't overwrite with unsigned
+                if [[ "$build_type" == "release" && -f "artifacts/$new_name" && "$filename" == *"-unsigned.apk" ]]; then
+                  echo "Skipping unsigned $filename as signed version exists"
+                else
+                  cp "$apk" "artifacts/$new_name"
+                  echo "Renamed $filename to $new_name"
+                fi
+              fi
+            fi
+          done
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: find-my-ip-apks
+          path: artifacts/*.apk
