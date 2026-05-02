@@ -41,17 +41,41 @@ jobs:
         env:
           HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
 
-      - name: Sign Release APKs
+      - name: Sign Release APKs Manually
         if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
-        uses: r0adkll/sign-android-release@v1
-        id: sign_app
-        with:
-          releaseDirectory: signing_stage
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          alias: ${{ secrets.ALIAS }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-          buildToolsVersion: 35.0.0
+        run: |
+          # Decode keystore
+          echo "${{ secrets.SIGNING_KEY }}" | base64 -d > keystore.jks
+          
+          # Find latest build tools
+          BUILD_TOOLS_DIR=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          echo "Using build tools from $BUILD_TOOLS_DIR"
+          
+          # Sign each collected APK
+          find signing_stage -name "*release-unsigned.apk" | while read unsigned_apk; do
+            filename=$(basename "$unsigned_apk")
+            # Create a base name by removing -unsigned.apk
+            base="${filename%-unsigned.apk}"
+            aligned_apk="signing_stage/${base}-aligned.apk"
+            signed_apk="signing_stage/${base}-signed.apk"
+            
+            echo "Aligning $filename..."
+            "$BUILD_TOOLS_DIR/zipalign" -f -v 4 "$unsigned_apk" "$aligned_apk"
+            
+            echo "Signing $filename..."
+            "$BUILD_TOOLS_DIR/apksigner" sign --ks keystore.jks \
+              --ks-key-alias "${{ secrets.ALIAS }}" \
+              --ks-pass "pass:${{ secrets.KEY_STORE_PASSWORD }}" \
+              --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
+              --out "$signed_apk" "$aligned_apk"
+            
+            echo "Successfully signed: $signed_apk"
+            # Cleanup aligned apk
+            rm "$aligned_apk"
+          done
+          
+          # Cleanup keystore
+          rm keystore.jks
         env:
           HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
 
