@@ -120,3 +120,6 @@ jobs:
           name: find-my-ip-signed-apks
           path: artifacts/*.apk
           if-no-files-found: error
+        env:
+          HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
+          
