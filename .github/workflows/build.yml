@@ -23,19 +23,30 @@ jobs:
       - name: Build all variants
         run: |
           cd "com.maksimowiczm.findmyip_15_src.tar.gz"
-          # Initialize Gradle wrapper if missing
           gradle wrapper
           chmod +x gradlew
           ./gradlew assemble
         env:
           GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
 
+      - name: Collect Release APKs for Signing
+        if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
+        run: |
+          mkdir -p signing_stage
+          PROJECT_ROOT="com.maksimowiczm.findmyip_15_src.tar.gz"
+          # Find all release APKs (usually named *-unsigned.apk or similar)
+          find "$PROJECT_ROOT/app/build/outputs/apk" -name "*release-unsigned.apk" -exec cp {} signing_stage/ \;
+          echo "Collected APKs:"
+          ls signing_stage/
+        env:
+          HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
+
       - name: Sign Release APKs
         if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-          releaseDirectory: com.maksimowiczm.findmyip_15_src.tar.gz/app/build/outputs/apk
+          releaseDirectory: signing_stage
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -53,49 +64,62 @@ jobs:
           VERSION_CODE=$(grep "versionCode =" $PROJECT_ROOT/app/build.gradle.kts | head -n 1 | sed 's/.*= //')
           PACKAGE_ID="com.maksimowiczm.findmyip"
           
-          echo "Base Version Name: $VERSION_NAME"
-          echo "Version Code: $VERSION_CODE"
-          
-          # Find all APKs and rename them
-          find "$PROJECT_ROOT/app/build/outputs/apk" -name "*.apk" | while read apk; do
+          # Search for APKs in both Gradle output and signing_stage
+          # This ensures we get debug APKs from Gradle and signed release APKs from signing_stage
+          find "$PROJECT_ROOT/app/build/outputs/apk" "signing_stage" -name "*.apk" 2>/dev/null | while read apk; do
             filename=$(basename "$apk")
-            dir=$(dirname "$apk")
             
-            # Extract build type (e.g., debug, release)
-            build_type=$(basename "$dir")
-            # Extract flavor (e.g., openSourceIpify, openSourceFake)
-            flavor_dir=$(dirname "$dir")
-            flavor=$(basename "$flavor_dir")
+            # Identify variant from filename if possible, or path
+            # Gradle path: .../apk/<flavor>/<buildType>/...
+            # Signing stage: flat directory
             
-            # Only process relevant flavors
-            if [[ "$flavor" == "openSourceIpify" || "$flavor" == "openSourceFake" ]]; then
+            variant=""
+            build_type=""
+            
+            if [[ "$apk" == *"signing_stage"* ]]; then
+              # Files in signing_stage are release variants
+              build_type="release"
+              if [[ "$filename" == *"openSourceIpify"* ]]; then variant="openSourceIpify"; fi
+              if [[ "$filename" == *"openSourceFake"* ]]; then variant="openSourceFake"; fi
+            else
+              # Files in Gradle output
+              dir=$(dirname "$apk")
+              build_type=$(basename "$dir")
+              flavor_dir=$(dirname "$dir")
+              variant=$(basename "$flavor_dir")
+            fi
+            
+            # Only process relevant variants
+            if [[ "$variant" == "openSourceIpify" || "$variant" == "openSourceFake" ]]; then
               
               current_pkg="$PACKAGE_ID"
               current_ver="$VERSION_NAME"
               
-              if [[ "$flavor" == "openSourceFake" ]]; then
+              if [[ "$variant" == "openSourceFake" ]]; then
                 current_pkg="${PACKAGE_ID}.fake"
                 current_ver="${VERSION_NAME}-fake"
               fi
               
-              # Construct descriptive variant label
-              variant_label="${flavor}-${build_type}"
+              variant_label="${variant}-${build_type}"
               
-              # Priority: Signed > Unsigned > Others (like debug)
               if [[ "$filename" == *"-signed.apk" ]]; then
                 new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}-signed.apk"
                 cp "$apk" "artifacts/$new_name"
               elif [[ "$filename" == *"-unsigned.apk" ]]; then
+                # Only copy unsigned if we don't have a signed version yet
                 new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}-unsigned.apk"
-                cp "$apk" "artifacts/$new_name"
-              else
-                # Default case (e.g., debug APKs)
+                if [[ ! -f "artifacts/${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}-signed.apk" ]]; then
+                   cp "$apk" "artifacts/$new_name"
+                fi
+              elif [[ "$build_type" == "debug" ]]; then
                 new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}.apk"
                 cp "$apk" "artifacts/$new_name"
               fi
-              echo "Processed $filename -> $new_name"
             fi
           done
+          
+          echo "Final Artifacts:"
+          ls artifacts/
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
