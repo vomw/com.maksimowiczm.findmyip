@@ -51,6 +51,7 @@ jobs:
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+          buildToolsVersion: 35.0.0
         env:
           HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
 
