@@ -20,34 +20,66 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
 
-      - name: Extract .tar.gz and .gz files
+      - name: Extract to temp and restore
         run: |
           set -e
 
+          TMP_DIR="$(mktemp -d)"
           changed=false
 
-          # Handle .tar.gz files (FILES ONLY)
-          find . -type f -name "*.tar.gz" -print0 | while IFS= read -r -d '' file; do
-            echo "Extracting $file"
-            if tar -xzf "$file" -C "$(dirname "$file")"; then
-              rm -f "$file"
-              changed=true
+          echo "Using temp dir: $TMP_DIR"
+
+          # --- Extract .tar.gz ---
+          find . -name "*.tar.gz" -print0 | while IFS= read -r -d '' path; do
+            if [ -f "$path" ]; then
+              echo "Processing $path"
+
+              if file "$path" | grep -q 'gzip compressed'; then
+                DEST="$TMP_DIR/$(dirname "$path")"
+                mkdir -p "$DEST"
+
+                if tar -xzf "$path" -C "$DEST"; then
+                  rm -f "$path"
+                  changed=true
+                else
+                  echo "Failed to extract $path"
+                  exit 1
+                fi
+              else
+                echo "Skipping (not real gzip): $path"
+              fi
             else
-              echo "Failed to extract $file"
-              exit 1
+              echo "Skipping (not a file): $path"
             fi
           done
 
-          # Handle .gz files (excluding .tar.gz)
-          find . -type f -name "*.gz" ! -name "*.tar.gz" -print0 | while IFS= read -r -d '' file; do
-            echo "Extracting $file"
-            if gunzip "$file"; then
-              changed=true
-            else
-              echo "Failed to extract $file"
-              exit 1
+          # --- Extract .gz (non-tar) ---
+          find . -name "*.gz" ! -name "*.tar.gz" -print0 | while IFS= read -r -d '' path; do
+            if [ -f "$path" ]; then
+              echo "Processing $path"
+
+              if file "$path" | grep -q 'gzip compressed'; then
+                DEST="$TMP_DIR/$(dirname "$path")"
+                mkdir -p "$DEST"
+
+                OUT="$DEST/$(basename "${path%.gz}")"
+
+                if gunzip -c "$path" > "$OUT"; then
+                  rm -f "$path"
+                  changed=true
+                else
+                  echo "Failed to extract $path"
+                  exit 1
+                fi
+              else
+                echo "Skipping (not real gzip): $path"
+              fi
             fi
           done
+
+          # --- Move extracted files back ---
+          echo "Restoring extracted files..."
+          rsync -a "$TMP_DIR"/ ./
 
           echo "changed=$changed" >> $GITHUB_ENV
 
@@ -55,5 +87,5 @@ jobs:
         if: env.changed == 'true'
         run: |
           git add .
-          git commit -m "Extract archives and remove compressed files"
+          git commit -m "Extract archives via temp dir and remove compressed files"
           git push
