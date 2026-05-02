@@ -20,12 +20,12 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Build all variants
+      - name: Build Release variants
         run: |
           cd "com.maksimowiczm.findmyip_15_src.tar.gz"
           gradle wrapper
           chmod +x gradlew
-          ./gradlew assemble
+          ./gradlew assembleRelease
         env:
           GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxMetaspaceSize=512m"
 
@@ -34,9 +34,9 @@ jobs:
         run: |
           mkdir -p signing_stage
           PROJECT_ROOT="com.maksimowiczm.findmyip_15_src.tar.gz"
-          # Find all release APKs (usually named *-unsigned.apk or similar)
+          # Find all release APKs
           find "$PROJECT_ROOT/app/build/outputs/apk" -name "*release-unsigned.apk" -exec cp {} signing_stage/ \;
-          echo "Collected APKs:"
+          echo "Collected APKs for signing:"
           ls signing_stage/
         env:
           HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
@@ -54,7 +54,6 @@ jobs:
           # Sign each collected APK
           find signing_stage -name "*release-unsigned.apk" | while read unsigned_apk; do
             filename=$(basename "$unsigned_apk")
-            # Create a base name by removing -unsigned.apk
             base="${filename%-unsigned.apk}"
             aligned_apk="signing_stage/${base}-aligned.apk"
             signed_apk="signing_stage/${base}-signed.apk"
@@ -69,17 +68,15 @@ jobs:
               --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
               --out "$signed_apk" "$aligned_apk"
             
-            echo "Successfully signed: $signed_apk"
-            # Cleanup aligned apk
             rm "$aligned_apk"
           done
           
-          # Cleanup keystore
           rm keystore.jks
         env:
           HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
 
-      - name: Prepare and Rename Artifacts
+      - name: Prepare and Rename Signed Artifacts
+        if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
         run: |
           mkdir -p artifacts
           PROJECT_ROOT="com.maksimowiczm.findmyip_15_src.tar.gz"
@@ -89,65 +86,37 @@ jobs:
           VERSION_CODE=$(grep "versionCode =" $PROJECT_ROOT/app/build.gradle.kts | head -n 1 | sed 's/.*= //')
           PACKAGE_ID="com.maksimowiczm.findmyip"
           
-          # Search for APKs in both Gradle output and signing_stage
-          # This ensures we get debug APKs from Gradle and signed release APKs from signing_stage
-          find "$PROJECT_ROOT/app/build/outputs/apk" "signing_stage" -name "*.apk" 2>/dev/null | while read apk; do
+          # Only process signed APKs from signing_stage
+          find "signing_stage" -name "*-signed.apk" 2>/dev/null | while read apk; do
             filename=$(basename "$apk")
             
-            # Identify variant from filename if possible, or path
-            # Gradle path: .../apk/<flavor>/<buildType>/...
-            # Signing stage: flat directory
-            
             variant=""
-            build_type=""
+            if [[ "$filename" == *"openSourceIpify"* ]]; then variant="openSourceIpify"; fi
+            if [[ "$filename" == *"openSourceFake"* ]]; then variant="openSourceFake"; fi
             
-            if [[ "$apk" == *"signing_stage"* ]]; then
-              # Files in signing_stage are release variants
-              build_type="release"
-              if [[ "$filename" == *"openSourceIpify"* ]]; then variant="openSourceIpify"; fi
-              if [[ "$filename" == *"openSourceFake"* ]]; then variant="openSourceFake"; fi
-            else
-              # Files in Gradle output
-              dir=$(dirname "$apk")
-              build_type=$(basename "$dir")
-              flavor_dir=$(dirname "$dir")
-              variant=$(basename "$flavor_dir")
+            current_pkg="$PACKAGE_ID"
+            current_ver="$VERSION_NAME"
+            
+            if [[ "$variant" == "openSourceFake" ]]; then
+              current_pkg="${PACKAGE_ID}.fake"
+              current_ver="${VERSION_NAME}-fake"
             fi
             
-            # Only process relevant variants
-            if [[ "$variant" == "openSourceIpify" || "$variant" == "openSourceFake" ]]; then
-              
-              current_pkg="$PACKAGE_ID"
-              current_ver="$VERSION_NAME"
-              
-              if [[ "$variant" == "openSourceFake" ]]; then
-                current_pkg="${PACKAGE_ID}.fake"
-                current_ver="${VERSION_NAME}-fake"
-              fi
-              
-              variant_label="${variant}-${build_type}"
-              
-              if [[ "$filename" == *"-signed.apk" ]]; then
-                new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}-signed.apk"
-                cp "$apk" "artifacts/$new_name"
-              elif [[ "$filename" == *"-unsigned.apk" ]]; then
-                # Only copy unsigned if we don't have a signed version yet
-                new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}-unsigned.apk"
-                if [[ ! -f "artifacts/${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}-signed.apk" ]]; then
-                   cp "$apk" "artifacts/$new_name"
-                fi
-              elif [[ "$build_type" == "debug" ]]; then
-                new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant_label}.apk"
-                cp "$apk" "artifacts/$new_name"
-              fi
-            fi
+            # Construct final descriptive name
+            new_name="${current_pkg}-${current_ver}-${VERSION_CODE}-${variant}-release.apk"
+            cp "$apk" "artifacts/$new_name"
+            echo "Processed signed $filename -> $new_name"
           done
           
-          echo "Final Artifacts:"
+          echo "Final Signed Artifacts:"
           ls artifacts/
+        env:
+          HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
 
-      - name: Upload Artifacts
+      - name: Upload Signed Artifacts
+        if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: find-my-ip-apks
+          name: find-my-ip-signed-apks
           path: artifacts/*.apk
+          if-no-files-found: error
