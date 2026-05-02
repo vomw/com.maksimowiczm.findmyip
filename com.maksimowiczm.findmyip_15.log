@@ -1,0 +1,270 @@
+== Installed Android Tools ==
+
+2025-08-26 09:43:00,515 DEBUG: Reading 'config.yml'
+2025-08-26 09:43:00,527 INFO: Creating log directory
+2025-08-26 09:43:00,527 INFO: Creating temporary directory
+2025-08-26 09:43:00,527 INFO: Creating output directory
+2025-08-26 09:43:00,540 DEBUG: Getting git vcs interface for https://github.com/maksimowiczm/find-my-ip
+2025-08-26 09:43:00,540 DEBUG: Checking com.maksimowiczm.findmyip:15
+2025-08-26 09:43:00,540 INFO: Building version 4.1.2 (15) of com.maksimowiczm.findmyip
+2025-08-26 09:43:00,545 DEBUG: Popen(['git', 'log', '-n', '1', '--pretty=%ct'], cwd=/home/vagrant/build/com.maksimowiczm.findmyip, universal_newlines=False, shell=None, istream=None)
+2025-08-26 09:43:00,557 DEBUG: > sudo passwd --lock root
+passwd: password changed.
+2025-08-26 09:43:01,362 DEBUG: > sudo SUDO_FORCE_REMOVE=yes dpkg --purge sudo
+(Reading database ... 64069 files and directories currently installed.)
+Removing sudo (1.9.13p3-1+deb12u2) ...
+Purging configuration files for sudo (1.9.13p3-1+deb12u2) ...
+dpkg: warning: while removing sudo, directory '/etc/sudoers.d' not empty so not removed
+Processing triggers for libc-bin (2.36-9+deb12u10) ...
+2025-08-26 09:43:23,367 INFO: Getting source for revision e3a76e8ecb9e7e0abfef5fb8ac875cd39cb8d2e9
+2025-08-26 09:43:23,368 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:23,369 DEBUG: > git rev-parse --show-toplevel
+2025-08-26 09:43:23,579 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:23,580 DEBUG: > git submodule foreach --recursive git reset --hard
+2025-08-26 09:43:23,783 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:23,783 DEBUG: > git reset --hard
+2025-08-26 09:43:23,986 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:23,987 DEBUG: > git submodule foreach --recursive git clean -dffx
+2025-08-26 09:43:24,090 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:24,090 DEBUG: > git clean -dffx
+2025-08-26 09:43:24,193 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:24,193 DEBUG: > git -c core.askpass=/bin/true -c core.sshCommand=/bin/false -c url.https://.insteadOf=ssh:// -c url.https://u:p@bitbucket.org/.insteadOf=git@bitbucket.org: -c url.https://u:p@bitbucket.org.insteadOf=git://bitbucket.org -c url.https://u:p@bitbucket.org.insteadOf=https://bitbucket.org -c url.https://u:p@github.com/.insteadOf=git@github.com: -c url.https://u:p@github.com.insteadOf=git://github.com -c url.https://u:p@github.com.insteadOf=https://github.com -c url.https://u:p@gitlab.com/.insteadOf=git@gitlab.com: -c url.https://u:p@gitlab.com.insteadOf=git://gitlab.com -c url.https://u:p@gitlab.com.insteadOf=https://gitlab.com -c url.https://u:p@codeberg.org/.insteadOf=git@codeberg.org: -c url.https://u:p@codeberg.org.insteadOf=git://codeberg.org -c url.https://u:p@codeberg.org.insteadOf=https://codeberg.org fetch --prune --prune-tags --force origin
+2025-08-26 09:43:24,998 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:24,999 DEBUG: > git -c core.askpass=/bin/true -c core.sshCommand=/bin/false -c url.https://.insteadOf=ssh:// -c url.https://u:p@bitbucket.org/.insteadOf=git@bitbucket.org: -c url.https://u:p@bitbucket.org.insteadOf=git://bitbucket.org -c url.https://u:p@bitbucket.org.insteadOf=https://bitbucket.org -c url.https://u:p@github.com/.insteadOf=git@github.com: -c url.https://u:p@github.com.insteadOf=git://github.com -c url.https://u:p@github.com.insteadOf=https://github.com -c url.https://u:p@gitlab.com/.insteadOf=git@gitlab.com: -c url.https://u:p@gitlab.com.insteadOf=git://gitlab.com -c url.https://u:p@gitlab.com.insteadOf=https://gitlab.com -c url.https://u:p@codeberg.org/.insteadOf=git@codeberg.org: -c url.https://u:p@codeberg.org.insteadOf=git://codeberg.org -c url.https://u:p@codeberg.org.insteadOf=https://codeberg.org fetch --prune --tags --force origin
+2025-08-26 09:43:25,603 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:25,604 DEBUG: > git remote set-head origin --auto
+2025-08-26 09:43:26,208 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:26,208 DEBUG: > git checkout -f e3a76e8ecb9e7e0abfef5fb8ac875cd39cb8d2e9
+2025-08-26 09:43:26,412 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:26,412 DEBUG: > git clean -dffx
+2025-08-26 09:43:26,515 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:26,515 DEBUG: > git rev-parse --show-toplevel
+2025-08-26 09:43:26,719 DEBUG: Directory: build/com.maksimowiczm.findmyip
+2025-08-26 09:43:26,719 DEBUG: > git submodule deinit --all --force
+2025-08-26 09:43:26,922 INFO: Creating local.properties file at build/com.maksimowiczm.findmyip/local.properties
+2025-08-26 09:43:27,408 INFO: Creating local.properties file at build/com.maksimowiczm.findmyip/app/local.properties
+2025-08-26 09:43:27,408 DEBUG: Removing debuggable flags from build/com.maksimowiczm.findmyip/app
+2025-08-26 09:43:27,512 INFO: Cleaning Gradle project...
+2025-08-26 09:43:27,512 DEBUG: Directory: build/com.maksimowiczm.findmyip/app
+2025-08-26 09:43:27,512 DEBUG: > /usr/local/bin/gradlew-fdroid clean
+Found 8.13 via distributionUrl
+Downloading missing gradle version 8.13
+cachedir /home/vagrant/.cache/fdroidserver
+/home/vagrant/.cache/fdroidserver/gradle-8.13-bin.zip: OK
+Running /opt/gradle/versions/8.13/bin/gradle clean
+
+Welcome to Gradle 8.13!
+
+Here are the highlights of this release:
+ - Daemon JVM auto-provisioning
+ - Enhancements for Scala plugin and JUnit testing
+ - Improvements for build authors and plugin developers
+
+For more details see https://docs.gradle.org/8.13/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:clean UP-TO-DATE
+
+BUILD SUCCESSFUL in 2m 12s
+1 actionable task: 1 up-to-date
+2025-08-26 09:45:47,069 INFO: Scanning source for common problems...
+2025-08-26 09:45:47,184 DEBUG: scanner is configured to use signature data from: 'suss'
+2025-08-26 09:45:47,184 DEBUG: downloading 'https://fdroid.gitlab.io/fdroid-suss/suss.json'
+2025-08-26 09:45:47,820 DEBUG: write 'suss.json' to cache
+2025-08-26 09:45:47,823 DEBUG: next suss.json cache update due in 23:59:59.986268
+2025-08-26 09:45:48,079 INFO: Removing gradle-wrapper.jar at gradle/wrapper/gradle-wrapper.jar
+2025-08-26 09:45:48,163 INFO: Creating source tarball...
+2025-08-26 09:45:48,430 INFO: Building Gradle project...
+2025-08-26 09:45:48,430 DEBUG: Directory: build/com.maksimowiczm.findmyip/app
+2025-08-26 09:45:48,430 DEBUG: > /usr/local/bin/gradlew-fdroid assembleOpenSourceIpifyRelease
+Found 8.13 via distributionUrl
+Running /opt/gradle/versions/8.13/bin/gradle assembleOpenSourceIpifyRelease
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+Exception while marshalling /opt/android-sdk/platforms/android-10/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-11/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-12/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-13/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-14/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-15/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-16/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-17/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-18/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-19/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-20/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-21/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-22/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-23/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-24/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-25/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-26/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-27/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-28/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-29/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-30/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-31/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-32/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-33/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-10/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-11/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-12/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-13/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-14/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-15/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-16/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-17/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-18/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-19/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-20/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-21/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-22/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-23/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-24/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-25/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-26/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-27/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-28/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-29/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-30/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-31/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-32/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-33/package.xml. Probably the SDK is read-only
+Checking the license for package Android SDK Build-Tools 35 in /opt/android-sdk/licenses
+License for package Android SDK Build-Tools 35 accepted.
+Preparing "Install Android SDK Build-Tools 35 v.35.0.0".
+"Install Android SDK Build-Tools 35 v.35.0.0" ready.
+Installing Android SDK Build-Tools 35 in /opt/android-sdk/build-tools/35.0.0
+"Install Android SDK Build-Tools 35 v.35.0.0" complete.
+"Install Android SDK Build-Tools 35 v.35.0.0" finished.
+Checking the license for package Android SDK Platform 36 in /opt/android-sdk/licenses
+License for package Android SDK Platform 36 accepted.
+Preparing "Install Android SDK Platform 36 (revision 2)".
+"Install Android SDK Platform 36 (revision 2)" ready.
+Installing Android SDK Platform 36 in /opt/android-sdk/platforms/android-36
+"Install Android SDK Platform 36 (revision 2)" complete.
+"Install Android SDK Platform 36 (revision 2)" finished.
+Exception while marshalling /opt/android-sdk/platforms/android-10/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-11/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-12/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-13/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-14/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-15/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-16/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-17/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-18/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-19/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-20/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-21/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-22/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-23/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-24/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-25/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-26/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-27/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-28/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-29/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-30/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-31/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-32/package.xml. Probably the SDK is read-only
+Exception while marshalling /opt/android-sdk/platforms/android-33/package.xml. Probably the SDK is read-only
+[=========                              ] 25%                                   [=========                              ] 25% Fetch remote repository...        [=======================================] 100% Fetch remote repository...       
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preOpenSourceIpifyReleaseBuild UP-TO-DATE
+> Task :app:mergeOpenSourceIpifyReleaseJniLibFolders
+> Task :app:mergeOpenSourceIpifyReleaseNativeLibs
+> Task :app:buildKotlinToolingMetadata
+
+> Task :app:stripOpenSourceIpifyReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libdatastore_shared_counter.so. Run with --info option to learn more.
+
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:extractOpenSourceIpifyReleaseNativeSymbolTables
+> Task :app:generateOpenSourceIpifyReleaseBuildConfig
+> Task :app:mergeOpenSourceIpifyReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:checkOpenSourceIpifyReleaseDuplicateClasses
+> Task :app:generateOpenSourceIpifyReleaseResValues
+> Task :app:checkOpenSourceIpifyReleaseAarMetadata
+> Task :app:mapOpenSourceIpifyReleaseSourceSetPaths
+> Task :app:extractOpenSourceIpifyReleaseSupportedLocales
+> Task :app:generateOpenSourceIpifyReleaseLocaleConfig
+> Task :app:generateOpenSourceIpifyReleaseResources
+> Task :app:packageOpenSourceIpifyReleaseResources
+> Task :app:mergeOpenSourceIpifyReleaseResources
+> Task :app:createOpenSourceIpifyReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksOpenSourceIpifyRelease
+> Task :app:parseOpenSourceIpifyReleaseLocalResources
+> Task :app:processOpenSourceIpifyReleaseMainManifest
+> Task :app:processOpenSourceIpifyReleaseManifest
+> Task :app:javaPreCompileOpenSourceIpifyRelease
+> Task :app:mergeOpenSourceIpifyReleaseArtProfile
+> Task :app:extractProguardFiles
+> Task :app:mergeOpenSourceIpifyReleaseStartupProfile
+> Task :app:mergeOpenSourceIpifyReleaseShaders
+> Task :app:compileOpenSourceIpifyReleaseShaders NO-SOURCE
+> Task :app:generateOpenSourceIpifyReleaseAssets UP-TO-DATE
+> Task :app:mergeOpenSourceIpifyReleaseAssets
+> Task :app:compressOpenSourceIpifyReleaseAssets
+> Task :app:extractOpenSourceIpifyReleaseVersionControlInfo
+> Task :app:collectOpenSourceIpifyReleaseDependencies
+> Task :app:sdkOpenSourceIpifyReleaseDependencyData
+> Task :app:writeOpenSourceIpifyReleaseAppMetadata
+> Task :app:writeOpenSourceIpifyReleaseSigningConfigVersions
+> Task :app:processOpenSourceIpifyReleaseManifestForPackage
+> Task :app:processOpenSourceIpifyReleaseResources
+> Task :app:optimizeOpenSourceIpifyReleaseResources
+> Task :app:kspOpenSourceIpifyReleaseKotlin
+> Task :app:compileOpenSourceIpifyReleaseKotlin
+> Task :app:compileOpenSourceIpifyReleaseJavaWithJavac
+> Task :app:mergeOpenSourceIpifyReleaseGeneratedProguardFiles
+> Task :app:processOpenSourceIpifyReleaseJavaRes
+> Task :app:expandOpenSourceIpifyReleaseArtProfileWildcards
+> Task :app:copyRoomSchemas NO-SOURCE
+> Task :app:mergeOpenSourceIpifyReleaseJavaResource
+> Task :app:generateOpenSourceIpifyReleaseLintVitalReportModel
+
+> Task :app:minifyOpenSourceIpifyReleaseWithR8
+WARNING: /home/vagrant/.gradle/caches/8.13/transforms/7c8413534d768f59535c2d40f52c5691/transformed/rules/lib/META-INF/com.android.tools/r8/kotlinx-serialization-common.pro:5:12-27: R8: The type "<1>$*" is used in a field rule. The characters in this type are legal for the JVM, but unlikely to originate from a source language. Maybe this is not the rule you are looking for.
+
+> Task :app:lintVitalAnalyzeOpenSourceIpifyRelease
+> Task :app:lintVitalReportOpenSourceIpifyRelease
+> Task :app:lintVitalOpenSourceIpifyRelease
+> Task :app:compileOpenSourceIpifyReleaseArtProfile
+> Task :app:packageOpenSourceIpifyRelease
+> Task :app:createOpenSourceIpifyReleaseApkListingFileRedirect
+> Task :app:assembleOpenSourceIpifyRelease
+
+BUILD SUCCESSFUL in 8m 57s
+50 actionable tasks: 50 executed
+2025-08-26 09:54:46,492 INFO: Successfully built version 4.1.2 of com.maksimowiczm.findmyip from e3a76e8ecb9e7e0abfef5fb8ac875cd39cb8d2e9
+2025-08-26 09:54:46,728 DEBUG: Checking build/com.maksimowiczm.findmyip/app/build/outputs/apk/openSourceIpify/release/app-openSource-ipify-release-unsigned.apk
+2025-08-26 09:54:46,747 INFO: Created directory for storing developer supplied reference binaries: 'unsigned/binaries'
+2025-08-26 09:54:46,748 INFO: ...retrieving https://github.com/maksimowiczm/find-my-ip/releases/download/v4.1.2/find-my-ip-4.1.2.apk
+2025-08-26 09:54:46,752 DEBUG: Starting new HTTPS connection (1): github.com:443
+2025-08-26 09:54:47,069 DEBUG: https://github.com:443 "GET /maksimowiczm/find-my-ip/releases/download/v4.1.2/find-my-ip-4.1.2.apk HTTP/1.1" 302 0
+2025-08-26 09:54:47,078 DEBUG: Starting new HTTPS connection (1): release-assets.githubusercontent.com:443
+2025-08-26 09:54:47,305 DEBUG: https://release-assets.githubusercontent.com:443 "GET /github-production-release-asset/888445580/86493789-29f7-4807-8753-9429af93321d?sp=r&sv=2018-11-09&sr=b&spr=https&se=2025-08-26T10%3A33%3A13Z&rscd=attachment%3B+filename%3Dfind-my-ip-4.1.2.apk&rsct=application%2Fvnd.android.package-archive&skoid=96c2d410-5711-43a1-aedd-ab1947aa7ab0&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skt=2025-08-26T09%3A32%3A28Z&ske=2025-08-26T10%3A33%3A13Z&sks=b&skv=2018-11-09&sig=K6j25Vy%2BQqoY4JEP%2FLrrj5e20m2%2B1KNEYJrTLN%2FaNCo%3D&jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmVsZWFzZS1hc3NldHMuZ2l0aHVidXNlcmNvbnRlbnQuY29tIiwia2V5Ijoia2V5MSIsImV4cCI6MTc1NjIwMjM4OCwibmJmIjoxNzU2MjAyMDg4LCJwYXRoIjoicmVsZWFzZWFzc2V0cHJvZHVjdGlvbi5ibG9iLmNvcmUud2luZG93cy5uZXQifQ.R6BqWEd2q6epQvguij48oFvVVv3mvPEAqHGQQV5AFew&response-content-disposition=attachment%3B%20filename%3Dfind-my-ip-4.1.2.apk&response-content-type=application%2Fvnd.android.package-archive HTTP/1.1" 200 3059139
+2025-08-26 09:54:48,369 DEBUG: unsigned/binaries/com.maksimowiczm.findmyip_15.binary.apk: Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+
+2025-08-26 09:54:49,256 DEBUG: /tmp/tmpeu4j3v7q/sigcp_com.maksimowiczm.findmyip_15.apk: Verifies
+Verified using v1 scheme (JAR signing): false
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): true
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+
+2025-08-26 09:54:49,256 INFO: ...successfully verified
+2025-08-26 09:54:49,257 INFO: compared built binary to supplied reference binary successfully
+2025-08-26 09:54:49,399 WARNING: Requested API level 36 is larger than maximum we have, returning API level 28 instead.
+2025-08-26 09:54:49,424 DEBUG: Using APK Signature v3
+2025-08-26 09:54:49,427 INFO: supplied reference binary has allowed signer 8fb26f9ff3a2f955d6133789a7ebac28a348e9438df13584d1d7e66aafdd7ea6
+2025-08-26 09:54:49,430 INFO: success: com.maksimowiczm.findmyip
+2025-08-26 09:54:49,430 INFO: Finished
+2025-08-26 09:54:49,431 INFO: 1 build succeeded
