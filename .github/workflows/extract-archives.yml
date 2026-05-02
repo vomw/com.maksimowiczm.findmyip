@@ -26,11 +26,11 @@ jobs:
 
           changed=false
 
-          # Handle .tar.gz files
-          find . -type f -name "*.tar.gz" | while read file; do
+          # Handle .tar.gz files (FILES ONLY)
+          find . -type f -name "*.tar.gz" -print0 | while IFS= read -r -d '' file; do
             echo "Extracting $file"
             if tar -xzf "$file" -C "$(dirname "$file")"; then
-              rm "$file"
+              rm -f "$file"
               changed=true
             else
               echo "Failed to extract $file"
@@ -38,8 +38,8 @@ jobs:
             fi
           done
 
-          # Handle .gz files (non-tar)
-          find . -type f -name "*.gz" ! -name "*.tar.gz" | while read file; do
+          # Handle .gz files (excluding .tar.gz)
+          find . -type f -name "*.gz" ! -name "*.tar.gz" -print0 | while IFS= read -r -d '' file; do
             echo "Extracting $file"
             if gunzip "$file"; then
               changed=true
@@ -49,7 +49,6 @@ jobs:
             fi
           done
 
-          # Save flag for next step
           echo "changed=$changed" >> $GITHUB_ENV
 
       - name: Commit and push changes
