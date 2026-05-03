@@ -104,7 +104,6 @@ jobs:
           HAS_SIGNING_KEY: ${{ secrets.SIGNING_KEY != '' }}
 
       - name: Upload Signed Artifacts
-        if: github.event_name != 'pull_request' && env.HAS_SIGNING_KEY == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: find-my-ip-signed-apks
