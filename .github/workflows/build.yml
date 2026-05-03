@@ -1,10 +1,6 @@
 name: Build Android APKs
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       new_package_id:
